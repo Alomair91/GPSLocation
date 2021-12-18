@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
 import com.omairtech.gpslocation.R
+import com.omairtech.gpslocation.listener.LocationListener
 import com.omairtech.gpslocation.model.AddressData
 import java.io.IOException
 import java.util.*
@@ -13,8 +14,8 @@ import java.util.*
 /**
  * Created by OmairTech on 01/04/2021.
  */
-object LocationUtils {
-    const val CURRENT_LOCATION = -1
+open class LocationUtils {
+    val CURRENT_LOCATION = -1
 
     fun getAddressDetails(
         activity: Activity,
@@ -101,11 +102,11 @@ object LocationUtils {
             ) * Math.cos(Math.toRadians(theta))
             dist = Math.acos(dist)
             dist = Math.toDegrees(dist)
-            dist = dist * 60 * 1.1515
+            dist *= 60 * 1.1515
             if (unit == "K") {
-                dist = dist * 1.609344
+                dist *= 1.609344
             } else if (unit == "N") {
-                dist = dist * 0.8684
+                dist *= 0.8684
             }
             dist
         }

@@ -4,13 +4,12 @@ import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.omairtech.gpslocation.GPSLocation
 import com.omairtech.gpslocation.model.AddressData
-import com.omairtech.gpslocation.util.LocationListener
+import com.omairtech.gpslocation.listener.LocationListener
 
 class MainActivity : AppCompatActivity() {
     private  val TAG = "MainActivity"
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                gpsLocation.createLocationRequest() //keep asking if imp or do whatever
         }
     }
-    private val listener : LocationListener = object : LocationListener{
+    private val listener : LocationListener = object : LocationListener {
         override fun onFindCurrentLocation(latitude: Double, longitude: Double) {
             super.onFindCurrentLocation(latitude, longitude)
             Log.d(TAG, "CurrentLocation:  $latitude - $longitude")

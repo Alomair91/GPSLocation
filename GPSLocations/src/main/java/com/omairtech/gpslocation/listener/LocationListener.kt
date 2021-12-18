@@ -1,4 +1,4 @@
-package com.omairtech.gpslocation.util
+package com.omairtech.gpslocation.listener
 
 import com.omairtech.gpslocation.model.AddressData
 

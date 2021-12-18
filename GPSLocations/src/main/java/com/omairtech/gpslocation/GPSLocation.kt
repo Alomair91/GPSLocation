@@ -16,8 +16,8 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.omairtech.gpslocation.util.LocationUtils.getAddressDetails
-import com.omairtech.gpslocation.util.LocationListener
+import com.omairtech.gpslocation.listener.LocationListener
+import com.omairtech.gpslocation.util.LocationUtils
 
 /**
  * Created by OmairTech on 01/04/2021.
@@ -30,7 +30,7 @@ class GPSLocation(
     private val requestPermissionLauncher: ActivityResultLauncher<Array<String>>? = null,
     private val activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>? = null,
     private val locationListener: LocationListener,
-) : android.location.LocationListener {
+) : android.location.LocationListener, LocationUtils() {
 
 
     companion object {
