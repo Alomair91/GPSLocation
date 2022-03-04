@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdkVersion versions.compileSdk
 
     defaultConfig {
         applicationId "com.omairtech.simple"
-        minSdk 21
-        targetSdk 31
-        versionCode 1
-        versionName "1.03"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.version_code
+        versionName "$versions.version_name"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
