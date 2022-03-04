@@ -5,6 +5,12 @@ Android GPSLocation
 
 - This library facilitates GPS handling for developers who need to get the current location and address from a user's phone.
 
+- The library allows you to retrieve the final location when the user is using the application or 
+  the background location when the user leaves the application, it also allows the user to choose 
+  the permissions through an interface that explains the reason for the service with the ability 
+  to modify the content of the interface, also when the user runs the location service in the 
+  background, the application will inform him by Send a permanent notice until the service stops.
+
 - You can request permissions to take user location while the user is using the app or while the app is running in the background.
 
 To get a Git project into your build:
