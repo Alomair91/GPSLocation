@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">simple</string>
+    <string name="app_name">GPSLocations</string>
     <string name="refresh">Refresh</string>
+    <string name="background_location">Background Location</string>
+
+    <string name="start_receiving_location">Start Receiving Location Updates</string>
+    <string name="stop_receiving_location">Stop Receiving Location Updates</string>
+
 </resources>

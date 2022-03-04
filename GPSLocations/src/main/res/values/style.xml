@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <!-- to show dialog in full screen active blow code-->
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <!-- <item name="android:windowIsFloating">false</item>
+         <item name="android:windowSoftInputMode">adjustResize</item>-->
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

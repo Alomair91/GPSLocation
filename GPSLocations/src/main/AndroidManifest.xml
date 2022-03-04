@@ -5,7 +5,28 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Provides an estimate of the device's location, to within about 1 mile (1.6 km). -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- Provides an estimate of the device's location that is as accurate as possible,
+         usually within about 160 feet (50 meters) and sometimes as accurate as within
+         10 feet (a few meters) or better. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Required only when requesting background location access on
+         Android 10 (API level 29) and higher. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+
+    <application>
+
+        <receiver
+            android:name=".receiver.LocationsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.omairtech.gpslocation.util.ACTION_PROCESS_UPDATES" />
+            </intent-filter>
+        </receiver>
+    </application>
 </manifest>

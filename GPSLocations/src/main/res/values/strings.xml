@@ -1,6 +1,28 @@
 <resources>
-    <string name="app_name">GPSLocation</string>
     <string name="current_location">Current location</string>
-    <string name="you">You</string>
-    <string name="select_address">Select address!</string>
+    <string name="settings">Settings</string>
+
+    <string name="approve_location_access">Approve Location Access</string>
+    <string name="approve_background_location_access">Approve Background Location Access</string>
+    <string name="background_location_starting">Background Location Starting</string>
+
+    <string name="fine_location_access_rationale_title">Receive location updates!</string>
+    <string name="fine_location_access_rationale_details">This sample allows you to receive location updates while using the app.
+        \n\n
+        In order for this feature to work, please approve access to your location via the button below.
+    </string>
+
+    <string name="background_location_access_rationale_title">Improve location accuracy!</string>
+    <string name="background_location_access_rationale_details">This sample allows you to receive location updates in the background.
+        \n\n
+        In order for this feature to work, please approve access to your location via the button below.
+    </string>
+
+    <string name="fine_location_permission_rationale">The fine location permission is needed for core functionality.</string>
+    <string name="fine_permission_denied_explanation">Fine location permission was denied, but is needed for core functionality.</string>
+
+    <string name="background_location_permission_rationale">The background location permission is needed for enhanced functionality.</string>
+    <string name="background_permission_denied_explanation">Background location permission was denied but needed for enhanced functionality.</string>
+
+
 </resources>
