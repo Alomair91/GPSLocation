@@ -105,15 +105,15 @@ How to use it?
 
         // Receiving location data from [FusedLocationProviderClient]
         viewModel.receivingLocation.observe(this) { location ->
-            setToText("CurrentLocation:  ${location.latitude} - ${location.longitude}")
+            Log.d(TAG, "CurrentLocation:  ${location.latitude} - ${location.longitude}")
 
             // Retrieve address data from [Geocoder] with the retrieved location
             viewModel.retrieveAddressDataFromGeocoder { address ->
-                setToText("Current Address: " + address.name + " - " + address.address)
+                Log.d(TAG, "Current Address: " + address.name + " - " + address.address)
             }
             // OR Retrieve address data from [Geocoder] using custom location
             viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) { address ->
-                setToText("Current Address: " + address.name + " - " + address.address)
+                Log.d(TAG, "Current Address: " + address.name + " - " + address.address)
             }
         }
 
