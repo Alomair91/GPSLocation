@@ -28,9 +28,11 @@ To get a Git project into your build:
         }
 
 - Step 2. Add the dependency
+  
+  [![](https://jitpack.io/v/Alomair91/GPSLocation.svg)](https://jitpack.io/#Alomair91/GPSLocation)
 
         dependencies {
-            implementation 'com.github.Alomair91:GPSLocation:1.03'
+            implementation 'com.github.Alomair91:GPSLocation:1.04'
         }
 
 
@@ -49,7 +51,7 @@ To get a Git project into your build:
         <dependency>
             <groupId>com.github.Alomair91</groupId>
             <artifactId>GPSLocation</artifactId>
-            <version>1.03</version>
+            <version>1.04</version>
         </dependency>
 
 
