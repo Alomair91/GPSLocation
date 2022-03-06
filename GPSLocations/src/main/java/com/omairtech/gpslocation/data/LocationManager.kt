@@ -1,12 +1,13 @@
 package com.omairtech.gpslocation.data
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.location.Geocoder
 import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -18,13 +19,11 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.omairtech.gpslocation.model.AddressData
 import com.omairtech.gpslocation.model.PermissionUIData
+import com.omairtech.gpslocation.model.toAddress
 import com.omairtech.gpslocation.model.toLocation
 import com.omairtech.gpslocation.receiver.LocationsBroadcastReceiver
 import com.omairtech.gpslocation.ui.PermissionFragment
-import com.omairtech.gpslocation.util.ACTION_PROCESS_UPDATES
-import com.omairtech.gpslocation.util.LocationType
-import com.omairtech.gpslocation.util.cancelStatusNotification
-import com.omairtech.gpslocation.util.hasPermission
+import com.omairtech.gpslocation.util.*
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "LocationManager"
@@ -55,44 +54,16 @@ internal class LocationManager(
     private val _receivingLocation: MutableLiveData<AddressData> = MutableLiveData<AddressData>()
     val receivingLocation: LiveData<AddressData> get() = _receivingLocation
 
-
     // The Fused Location Provider provides access to location APIs.
     private var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
-    private var isPermissionGranted: Boolean = false
-
-    init {
-        Thread.sleep(500)
-        if (!checkHasPermission()) checkPermission()
-        _receivingLocationUpdates.value = SessionPreference.getInstance(context).isForegroundOn ||
-                SessionPreference.getInstance(context).isBackgroundOn
-    }
-
-    fun setLocationType(locationType: LocationType) {
-        SessionPreference.getInstance(context).saveForeground(locationType == LocationType.FINE_LOCATION)
-        SessionPreference.getInstance(context).saveBackground(locationType == LocationType.BACKGROUND_LOCATION)
-
-        if(this.locationType != locationType) stopLocationUpdates()
-        this.locationType = locationType
-        if (!checkHasPermission()) checkPermission()
-    }
-
-    var isBackgroundOn:Boolean = SessionPreference.getInstance(context).isBackgroundOn
     var isForegroundOn:Boolean = SessionPreference.getInstance(context).isForegroundOn
+    var isBackgroundOn:Boolean = SessionPreference.getInstance(context).isBackgroundOn
 
-    private fun checkPermission() {
-        PermissionFragment.newInstance(context, locationType, permissionUIData) { isGranted ->
-            isPermissionGranted = isGranted
-        }
-    }
+    var hasForegroundPermissions:Boolean = checkHasPermission(LocationType.FINE_LOCATION)
+    var hasBackgroundPermissions:Boolean = checkHasPermission(LocationType.BACKGROUND_LOCATION)
 
-    private fun checkHasPermission(): Boolean {
-        return if (locationType == LocationType.BACKGROUND_LOCATION)
-            context.hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        else
-            context.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
 
     // Stores parameters for requests to the FusedLocationProviderApi.
     private var locationRequest: LocationRequest = LocationRequest.create().apply {
@@ -140,16 +111,60 @@ internal class LocationManager(
         PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    private var isGPSRequested: Boolean = false
-    fun setIsGPSRequested(isGPSRequested: Boolean) {
-        this.isGPSRequested = isGPSRequested
+
+    init {
+        Thread.sleep(500)
+        _receivingLocationUpdates.value = isForegroundOn || isBackgroundOn
+        context.isGooglePlayServicesAvailable
     }
 
-    fun createLocationRequest() {
-        if (!checkHasPermission()) {
+    fun setLocationType(locationType: LocationType) {
+        if(locationType == LocationType.FINE_LOCATION)
+            SessionPreference.getInstance(context).saveForeground(true)
+        else SessionPreference.getInstance(context).saveBackground(true)
+
+        if(this.locationType != locationType) stopLocationUpdates()
+        this.locationType = locationType
+    }
+
+
+    private fun checkHasPermission(locationType:LocationType): Boolean {
+        return if (locationType == LocationType.BACKGROUND_LOCATION)
+            context.hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        else
+            context.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    // Ask user to get the required permissions
+    private fun checkPermission() {
+        PermissionFragment.newInstance(context, locationType, permissionUIData) { isGranted ->
+            if(isGranted) startLocationUpdates()
+        }
+    }
+
+    // To prevent more than one GPS start request
+    private var isRequestGPSDialogOn: Boolean = false
+    fun isRequestGPSDialogOn(isGPSRequested: Boolean) {
+        this.isRequestGPSDialogOn = isGPSRequested
+    }
+
+    /**
+     * startLocationUpdates function will do:
+     * 1. Check if the user has the permissions or ask for the required permissions
+     * 2. Stop receiving the update if you started before
+     * 3. If the phone's GPS is off, ask to start it.
+     * 4. Start receiving location updates.
+     */
+    fun startLocationUpdates() {
+        Log.d(TAG, "startLocationUpdates()")
+
+        if (!checkHasPermission(locationType)) {
             checkPermission()
             return
         }
+
+        if(isForegroundOn || isBackgroundOn)
+            stopLocationUpdates()
 
         if (activityResultLauncher != null) {
             val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
@@ -157,15 +172,15 @@ internal class LocationManager(
             val task = client.checkLocationSettings(builder.build())
             task.addOnSuccessListener(fun(_: LocationSettingsResponse) {
                 // All location sp are satisfied. The client can initialize  location requests here.
-                startLocationUpdates()
-                setIsGPSRequested(false)
+                createLocationRequest()
+                isRequestGPSDialogOn(false)
             })
             task.addOnFailureListener(fun(e: Exception?) {
                 if (e is ResolvableApiException) {
                     // Location sp are not satisfied, but this can be fixed by showing the user a dialog.
                     try {
-                        if (!isGPSRequested) {
-                            setIsGPSRequested(true)
+                        if (!isRequestGPSDialogOn) {
+                            isRequestGPSDialogOn(true)
                             val intentSenderRequest =
                                 IntentSenderRequest.Builder(e.resolution).build()
                             activityResultLauncher.launch(intentSenderRequest)
@@ -175,7 +190,7 @@ internal class LocationManager(
                     }
                 }
             })
-        } else startLocationUpdates()
+        } else createLocationRequest()
     }
 
 
@@ -188,20 +203,14 @@ internal class LocationManager(
      */
     @Throws(SecurityException::class)
     @MainThread
-    fun startLocationUpdates() {
-        Log.d(TAG, "startLocationUpdates()")
-
-        if (!checkHasPermission()) {
-            checkPermission()
-            return
-        }
-
+    private fun createLocationRequest() {
         try {
             _receivingLocationUpdates.value = true
 
             if (locationType == LocationType.FINE_LOCATION) {
                 fusedLocationClient.requestLocationUpdates(locationRequest,
                     locationCallback, Looper.myLooper()!!)
+
             } else {
                 // If the PendingIntent is the same as the last request (which it always is), this
                 // request will replace any requestLocationUpdates() called before.
@@ -222,6 +231,7 @@ internal class LocationManager(
     fun stopLocationUpdates() {
         Log.d(TAG, "stopLocationUpdates() $locationType")
         _receivingLocationUpdates.value = false
+        cancelStatusNotification(context)
 
         if (locationType == LocationType.FINE_LOCATION) {
             // stop location updates when Activity is no longer active
@@ -231,7 +241,17 @@ internal class LocationManager(
             fusedLocationClient.removeLocationUpdates(locationUpdatePendingIntent)
             SessionPreference.getInstance(context).saveBackground(false)
         }
-        cancelStatusNotification(context)
+    }
+
+    /**
+     * Get address data from [Geocoder]
+     */
+    fun retrieveAddressDataFromGeocoder(latitude: Double? = null, longitude: Double? = null, callback: (AddressData) -> Unit) {
+         if(latitude == null || longitude == null){
+            receivingLocation.value?.let {
+               retrieveAddressDataFromGeocoder(context,it.latitude, it.longitude,callback)
+            }
+        } else retrieveAddressDataFromGeocoder(context,latitude, longitude,callback)
     }
 
     companion object {

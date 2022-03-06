@@ -64,8 +64,7 @@ val Context.isGooglePlayServicesAvailable: Boolean
 fun Context.hasPermission(permission: String): Boolean {
     // Background permissions didn't exit prior to Q, so it's approved by default.
     if (permission == Manifest.permission.ACCESS_BACKGROUND_LOCATION &&
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-    ) {
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
         return true
     }
 
@@ -83,7 +82,7 @@ fun Context.hasPermission(permission: String): Boolean {
 fun Fragment.requestPermissionWithRationale(
     permissions: Array<String>,
     requestPermissionLauncher: ActivityResultLauncher<Array<String>>,
-    snackbar: Snackbar? = null,
+    snackbar: Snackbar? = null
 ) {
     val provideRationale = shouldShowRequestPermissionRationale(permissions[0])
     if (provideRationale && snackbar != null) snackbar.show()
@@ -114,9 +113,6 @@ fun BottomSheetDialogFragment.fullScreen() {
 
 /**
  * Create a Notification that is shown as a heads-up notification if possible.
- *
- * For this codelab, this is used to show a notification so that you know when different steps
- * of the background work chain are starting
  *
  * @param message Message shown on the notification
  * @param context Context needed to create Toast
@@ -169,10 +165,8 @@ fun isAppInForeground(context: Context): Boolean {
     val appProcesses = activityManager.runningAppProcesses ?: return false
 
     appProcesses.forEach { appProcess ->
-        if (appProcess.importance ==
-            ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
-            appProcess.processName == context.packageName
-        ) {
+        if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            && appProcess.processName == context.packageName) {
             return true
         }
     }
@@ -182,7 +176,12 @@ fun isAppInForeground(context: Context): Boolean {
 /**
  * Get address data from [Geocoder]
  */
-fun getAddressData(context: Context, lat: Double, long: Double, callback: (AddressData) -> Unit) {
+fun retrieveAddressDataFromGeocoder(
+    context: Context,
+    latitude: Double,
+    longitude: Double,
+    callback: (AddressData) -> Unit,
+) {
     val thread: Thread = object : Thread() {
         override fun run() {
             try {
@@ -191,10 +190,13 @@ fun getAddressData(context: Context, lat: Double, long: Double, callback: (Addre
                     return
                 }
                 val geocoder = Geocoder(context, Locale.getDefault())
-                val addresses = geocoder.getFromLocation(lat, long, 1)
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
                 if (addresses != null && addresses.size > 0) {
                     Log.d("Geocoder", addresses[0].toString())
-                    callback(toAddress(addresses[0], true))
+                    val addressData = toAddress(addresses[0], true)
+                    if(context is Activity)
+                       context.runOnUiThread { callback(addressData) }
+                    else callback(addressData)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -211,7 +213,7 @@ fun getAddressData(context: Context, lat: Double, long: Double, callback: (Addre
  * @param latitude  destination point
  * @param longitude destination point
  */
-fun showLocationOnMap(context: Activity, latitude: Double, longitude: Double) {
+fun showLocationOnGoogleMapsApplication(context: Activity, latitude: Double, longitude: Double) {
     val uri = "http://maps.google.com/maps?daddr=$latitude,$longitude"
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
     intent.setPackage("com.google.android.apps.maps")

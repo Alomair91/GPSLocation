@@ -1,25 +1,18 @@
 package com.omairtech.simple
 
-import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.Switch
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import com.google.gson.Gson
 import com.omairtech.gpslocation.data.LocationRepository
-import com.omairtech.gpslocation.model.AddressData
 import com.omairtech.gpslocation.model.PermissionUIData
-import com.omairtech.gpslocation.model.UiData
-import com.omairtech.gpslocation.util.KEY_ADDRESS_DATA
 import com.omairtech.gpslocation.util.LocationType
-import com.omairtech.gpslocation.util.hasPermission
 import com.omairtech.gpslocation.viewmodels.GPSLocationViewModel
 import com.omairtech.gpslocation.viewmodels.GPSLocationViewModelFactory
 
@@ -30,13 +23,13 @@ class MainActivity : AppCompatActivity() {
     private val activityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
-        viewModel.setIsGPSRequested(false)
+        viewModel.isRequestGPSDialogOn(false)
         when (result.resultCode) {
             Activity.RESULT_OK ->
                 viewModel.startLocationUpdates()
             else -> {
                 //keep asking if imp or do whatever
-                viewModel.createLocationRequest()
+                viewModel.startLocationUpdates()
             }
         }
     }
@@ -63,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         @Suppress("UNCHECKED_CAST")
         GPSLocationViewModelFactory(application, LocationRepository.getInstance(
             this, locationType, intervalInSecond, fastIntervalInSecond, activityResultLauncher,
-            PermissionUIData(foreground = foregroundUiData,background = backgroundUiData),
+            PermissionUIData(foreground = foregroundUiData, background = backgroundUiData),
             // Don't forget to pass broadcast receiver class here
             LocationBroadcastReceiver::class.java as Class<BroadcastReceiver>
         ))
@@ -73,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        updateStartOrStopButtonState(viewModel.isForegroundOn || viewModel.isBackgroundOn)
         findViewById<SwitchCompat>(R.id.switch_background_location).isChecked = viewModel.isBackgroundOn
         findViewById<SwitchCompat>(R.id.switch_background_location).setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -83,30 +75,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // receiving location updates if it's starting or not
+        updateStartOrStopButtonState(viewModel.isForegroundOn || viewModel.isBackgroundOn)
+
+        // Receiving location updates if it's starting or not
         viewModel.receivingLocationUpdates.observe(this) {
             updateStartOrStopButtonState(it)
         }
 
-        // receiving location data from [FusedLocationProviderClient]
-        viewModel.receivingLocation.observe(this) {
-            setToText("CurrentLocation:  ${it.latitude} - ${it.longitude}")
-            viewModel.retrieveAddressDataFromGeocoder()
-        }
+        // Receiving location data from [FusedLocationProviderClient]
+        viewModel.receivingLocation.observe(this) { location ->
+            setToText("CurrentLocation:  ${location.latitude} - ${location.longitude}")
 
-        // receiving address data from [Geocoder]
-        viewModel.receivingAddressFromGeocoder.observe(this) { listOfWork ->
-            if (listOfWork.isNullOrEmpty()) {
-                return@observe
+            // Retrieve address data from [Geocoder] with the retrieved location
+            viewModel.retrieveAddressDataFromGeocoder {
+                setToText("Current Address: ${it.name} - ${it.address}")
             }
-            // We only care about the first one output status.
-            val workInfo = listOfWork[0]
-            if (workInfo.state.isFinished) {
-                val output = workInfo.outputData.getString(KEY_ADDRESS_DATA)
-                if (!output.isNullOrEmpty()) {
-                    val addressData = Gson().fromJson(output, AddressData::class.java)
-                    setToText("Current Address: " + addressData?.name + " - " + addressData?.address)
-                }
+
+            // Retrieve address data from [Geocoder] using custom location
+            viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) {
+                setToText("Current Address: ${it.name} - ${it.address}")
             }
         }
     }
@@ -114,9 +101,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         // Stops location updates if background permissions aren't approved.
-        if (viewModel.receivingLocationUpdates.value == true
-            && !hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        ) {
+        if (viewModel.receivingLocationUpdates.value == true && !viewModel.hasBackgroundPermissions) {
             viewModel.stopLocationUpdates()
         }
     }
@@ -136,9 +121,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var location: String = ""
-    private fun setToText(l: String) {
-        Log.d(TAG, l)
-        location += "\n\n$l"
-        findViewById<TextView>(R.id.textView).text = location
+    private fun setToText(location: String) {
+        Log.d(TAG, location)
+        this.location += "\n\n$location"
+        findViewById<TextView>(R.id.textView).text = this.location
     }
 }

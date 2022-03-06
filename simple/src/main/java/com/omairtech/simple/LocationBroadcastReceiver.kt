@@ -8,10 +8,7 @@ import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationResult
 import com.omairtech.gpslocation.model.AddressData
 import com.omairtech.gpslocation.model.toLocation
-import com.omairtech.gpslocation.util.ACTION_PROCESS_UPDATES
-import com.omairtech.gpslocation.util.getAddressData
-import com.omairtech.gpslocation.util.isAppInForeground
-import com.omairtech.gpslocation.util.makeStatusNotification
+import com.omairtech.gpslocation.util.*
 
 private const val TAG = "LocationReceiver"
 
@@ -34,7 +31,7 @@ class LocationBroadcastReceiver : BroadcastReceiver() {
                     Log.d(TAG, "Background Location in App ${addressData.latitude} - ${addressData.longitude}")
 
                     // Retrieve address data from [Geocoder]
-                    getAddressData(context,addressData.latitude,addressData.longitude){
+                    retrieveAddressDataFromGeocoder(context,addressData.latitude,addressData.longitude){
                         addressData = it
                         Log.d(TAG, "Background Location in App ${it.address}")
 

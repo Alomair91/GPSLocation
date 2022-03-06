@@ -17,6 +17,7 @@ package com.omairtech.gpslocation.data
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.location.Geocoder
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.MainThread
@@ -43,33 +44,44 @@ class LocationRepository private constructor(private val locationManager: Locati
      */
     val locationUpdates: LiveData<AddressData> = locationManager.receivingLocation
 
+
+    var isBackgroundOn: Boolean = locationManager.isBackgroundOn
+    var isForegroundOn: Boolean = locationManager.isForegroundOn
+
+    var hasForegroundPermissions: Boolean = locationManager.hasForegroundPermissions
+    var hasBackgroundPermissions: Boolean = locationManager.hasBackgroundPermissions
+
     fun setLocationType(locationType: LocationType) {
         locationManager.setLocationType(locationType)
     }
-    var isBackgroundOn:Boolean = locationManager.isBackgroundOn
-    var isForegroundOn:Boolean = locationManager.isForegroundOn
-
-    fun setIsGPSRequested(isGPSRequested: Boolean) {
-        locationManager.setIsGPSRequested(isGPSRequested)
+    fun isRequestGPSDialogOn(isGPSRequested: Boolean) {
+        locationManager.isRequestGPSDialogOn(isGPSRequested)
     }
 
-    /**
-     * Subscribes to location updates.
-     */
-    @MainThread
-    fun createLocationRequest() = locationManager.createLocationRequest()
 
     /**
      * Subscribes to location updates.
      */
     @MainThread
-    fun startLocationUpdates() = locationManager.createLocationRequest()
+    fun startLocationUpdates() = locationManager.startLocationUpdates()
 
     /**
      * Un-subscribes from location updates.
      */
     @MainThread
     fun stopLocationUpdates() = locationManager.stopLocationUpdates()
+
+    /**
+     * Get address data from [Geocoder]
+     */
+    @MainThread
+    fun retrieveAddressDataFromGeocoder(
+        latitude: Double? = null,
+        longitude: Double? = null,
+        callback: (AddressData) -> Unit,
+    ) {
+        locationManager.retrieveAddressDataFromGeocoder(latitude, longitude, callback)
+    }
 
     companion object {
         @Volatile
@@ -82,7 +94,7 @@ class LocationRepository private constructor(private val locationManager: Locati
             fastIntervalInSecond: Long = 30,
             activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>? = null,
             permissionUIData: PermissionUIData? = PermissionUIData(),
-            broadcastReceiver: Class<BroadcastReceiver>? = null
+            broadcastReceiver: Class<BroadcastReceiver>? = null,
         ): LocationRepository {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: LocationRepository(
@@ -90,7 +102,7 @@ class LocationRepository private constructor(private val locationManager: Locati
                         locationType,
                         intervalInSecond,
                         fastIntervalInSecond,
-                        activityResultLauncher,permissionUIData,broadcastReceiver))
+                        activityResultLauncher, permissionUIData, broadcastReceiver))
                     .also { INSTANCE = it }
             }
         }

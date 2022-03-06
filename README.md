@@ -68,8 +68,8 @@ How to use it?
                 Activity.RESULT_OK ->
                     viewModel.startLocationUpdates()
                 else -> {
-                    //keep asking if imp or do whatever
-                    viewModel.createLocationRequest()
+                    // keep asking if imp or do whatever
+                    viewModel.startLocationUpdates()
                 }
             }
         }
@@ -102,26 +102,16 @@ How to use it?
         }
 
         // Receiving location data from [FusedLocationProviderClient]
-        viewModel.receivingLocation.observe(this) {
-            Log.d("CurrentLocation". "Lat: ${it.latitude} - Long: ${it.longitude}")
+        viewModel.receivingLocation.observe(this) { location ->
+            setToText("CurrentLocation:  ${location.latitude} - ${location.longitude}")
 
-            // Retrieve address data from [Geocoder]
-            viewModel.retrieveAddressDataFromGeocoder()
-        }
-
-        // Receiving address data from [Geocoder]
-        viewModel.receivingAddressFromGeocoder.observe(this) { listOfWork ->
-            if (listOfWork.isNullOrEmpty()) {
-                return@observe
+            // Retrieve address data from [Geocoder] with the retrieved location
+            viewModel.retrieveAddressDataFromGeocoder { address ->
+                setToText("Current Address: " + address.name + " - " + address.address)
             }
-            // We only care about the first one output status.
-            val workInfo = listOfWork[0]
-            if (workInfo.state.isFinished) {
-                val output = workInfo.outputData.getString(KEY_ADDRESS_DATA)
-                if (!output.isNullOrEmpty()) {
-                    val addressData = Gson().fromJson(output, AddressData::class.java)
-                    setToText("Current Address: " + addressData?.name + " - " + addressData?.address)
-                }
+            // OR Retrieve address data from [Geocoder] using custom location
+            viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) { address ->
+                setToText("Current Address: " + address.name + " - " + address.address)
             }
         }
 
@@ -133,7 +123,9 @@ How to use it?
         // To stop location updates
         // Don't forget to stops location updates in [Activity/Fragment onPause]  if background  
         // permissions aren't approved.
-        viewModel.stopLocationUpdates()
+        if (!viewModel.hasBackgroundPermissions) {
+            viewModel.stopLocationUpdates()
+        }
 
 
 
@@ -163,7 +155,7 @@ How to use it?
                             Log.d(TAG, "Background Location in App ${addressData.latitude} - ${addressData.longitude}")
         
                             // Retrieve address data from [Geocoder]
-                            getAddressData(context,addressData.latitude,addressData.longitude){
+                            retrieveAddressDataFromGeocoder(context,addressData.latitude,addressData.longitude){
                                 addressData = it
                                 Log.d(TAG, "Background Location in App ${it.address}")
         
@@ -214,7 +206,7 @@ How to use it?
             GPSLocationViewModelFactory(application, LocationRepository.getInstance(
                 this, locationType, intervalInSecond, fastIntervalInSecond, activityResultLauncher,
                 PermissionUIData(background = foregroundUiData),
-                // Don't forget to pass broadcast receiver class here 
+                // TODO: Don't forget to pass broadcast receiver class here 
                 LocationBroadcastReceiver::class.java as Class<BroadcastReceiver>
             ))
         }

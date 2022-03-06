@@ -3,26 +3,24 @@ package com.omairtech.gpslocation.model
 import android.location.Address
 import android.location.Location
 import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
 import com.omairtech.gpslocation.util.CURRENT_LOCATION
 import java.io.Serializable
 
 @Keep
 data class AddressData(
-    @SerializedName("id") var id: Int = 0,
-    @SerializedName("name") var name: String = "",
-    @SerializedName("address") var address: String = "",
-    @SerializedName("latitude") var latitude: Double = 0.0,
-    @SerializedName("longitude") var longitude: Double = 0.0,
-    @SerializedName("countryName") var countryName: String? = "",
-    @SerializedName("adminArea") var adminArea: String? = "",
-    @SerializedName("subAdminArea") var subAdminArea: String? = "",
-    @SerializedName("locality") var locality: String? = "",
-    @SerializedName("subLocality") var subLocality: String? = "",
-    @SerializedName("thoroughfare") var thoroughfare: String? = "",
-    @SerializedName("subThoroughfare") var subThoroughfare: String? = "",
-    @SerializedName("foreground") var foreground: Boolean? = true,
-
+    var id: Int = 0,
+    var name: String = "",
+    var address: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var countryName: String? = "",
+    var adminArea: String? = "",
+    var subAdminArea: String? = "",
+    var locality: String? = "",
+    var subLocality: String? = "",
+    var thoroughfare: String? = "",
+    var subThoroughfare: String? = "",
+    var foreground: Boolean? = true,
 ) : Serializable
 
 
