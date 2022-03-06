@@ -5,10 +5,10 @@ Android GPSLocation
 
 - This library facilitates GPS handling for developers who need to get the current location and address from a user's phone.
 
-- The library allows you to retrieve the final location when the user is using the application or 
-  the background location when the user leaves the application, it also allows the user to choose 
-  the permissions through an interface that explains the reason for the service with the ability 
-  to modify the content of the interface, also when the user runs the location service in the 
+- The library allows you to retrieve the final location when the user is using the application or
+  the background location when the user leaves the application, it also allows the user to choose
+  the permissions through an interface that explains the reason for the service with the ability
+  to modify the content of the interface, also when the user runs the location service in the
   background, the application will inform him by Send a permanent notice until the service stops.
 
 - You can request permissions to take user location while the user is using the app or while the app is running in the background.
@@ -28,7 +28,7 @@ To get a Git project into your build:
         }
 
 - Step 2. Add the dependency
-  
+
   [![](https://jitpack.io/v/Alomair91/GPSLocation.svg)](https://jitpack.io/#Alomair91/GPSLocation)
 
         dependencies {
@@ -108,12 +108,12 @@ How to use it?
             Log.d(TAG, "CurrentLocation:  ${location.latitude} - ${location.longitude}")
 
             // Retrieve address data from [Geocoder] with the retrieved location
-            viewModel.retrieveAddressDataFromGeocoder { address ->
-                Log.d(TAG, "Current Address: " + address.name + " - " + address.address)
+            viewModel.retrieveAddressDataFromGeocoder {
+                Log.d(TAG, "Current Address: ${it.name} - ${it.address}")
             }
             // OR Retrieve address data from [Geocoder] using custom location
-            viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) { address ->
-                Log.d(TAG, "Current Address: " + address.name + " - " + address.address)
+            viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) {
+                Log.d(TAG, "Current Address: ${it.name} - ${it.address}")
             }
         }
 
@@ -217,6 +217,12 @@ How to use it?
 
 
 #### Please follow the simple project if you don't understand any of these instructions.
+
+-------
+#### Warning: If you are not going to use the background location, you must add the following line to the [AndroidManifest] file to remove the permission
+
+        <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
+-------
 
 Contributors:
 -------
