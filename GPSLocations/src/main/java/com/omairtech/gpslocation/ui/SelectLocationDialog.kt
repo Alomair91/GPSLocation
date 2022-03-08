@@ -78,12 +78,12 @@ class SelectLocationDialog : BottomSheetDialogFragment(), OnMapReadyCallback {
             }
         }
         handleEvent()
+        createLocationRequest()
     }
 
     override fun onStart() {
         super.onStart()
         fullScreen()
-        createLocationRequest()
     }
 
     override fun onPause() {
