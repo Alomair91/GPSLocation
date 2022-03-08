@@ -1,5 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">GPSLocations</string>
+    <string name="google_api_key" tools:ignore="ExtraTranslation">AIzaSyDtN5esaE9A9BmCcF1DJseWz_hcm5Qq_eU</string>
+
     <string name="refresh">Refresh</string>
     <string name="background_location">Background Location</string>
 

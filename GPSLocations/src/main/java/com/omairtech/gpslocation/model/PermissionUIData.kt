@@ -8,42 +8,42 @@ import java.io.Serializable
 
 @Keep
 abstract class UiData(
-    val hideUI: Boolean? = false,
-    @DrawableRes val icon_res: Int?,
-    @StringRes val title_res: Int?,
-    @StringRes val details_res: Int?,
-    @StringRes val approve_res: Int?,
-    @StringRes val cancel_res: Int?,
-    @StringRes val snackbar_permission_rationale_res: Int?,
-    @StringRes val snackbar_permission_denied_explanation_res: Int?,
+    var hideUI: Boolean? = false,
+    @DrawableRes var icon_res: Int?,
+    @StringRes var title_res: Int?,
+    @StringRes var details_res: Int?,
+    @StringRes var approve_res: Int?,
+    @StringRes var cancel_res: Int?,
+    @StringRes var snackbar_permission_rationale_res: Int?,
+    @StringRes var snackbar_permission_denied_explanation_res: Int?,
 )
 
 @Keep
 data class PermissionUIData(
-    val foreground: Foreground? = Foreground(),
-    val background: Background? = Background()
+    var foreground: Foreground? = Foreground(),
+    var background: Background? = Background()
 ) : Serializable {
     data class Foreground(
-        val hideUi: Boolean? = false,
-        @DrawableRes val icon: Int? = R.drawable.ic_location_on_24px,
-        @StringRes val title: Int? = R.string.fine_location_access_rationale_title,
-        @StringRes val details: Int? = R.string.fine_location_access_rationale_details,
-        @StringRes val btn_approve: Int? = R.string.approve_location_access,
+        var hideUi: Boolean? = false,
+        @DrawableRes var icon: Int? = R.drawable.ic_location_on_24px,
+        @StringRes var title: Int? = R.string.fine_location_access_rationale_title,
+        @StringRes var details: Int? = R.string.fine_location_access_rationale_details,
+        @StringRes var btn_approve: Int? = R.string.approve_location_access,
         @StringRes var btn_cancel: Int? = android.R.string.cancel,
-        @StringRes val snackbar_permission_rationale: Int? = R.string.fine_location_permission_rationale,
-        @StringRes val snackbar_permission_denied_explanation: Int? = R.string.fine_permission_denied_explanation,
+        @StringRes var snackbar_permission_rationale: Int? = R.string.fine_location_permission_rationale,
+        @StringRes var snackbar_permission_denied_explanation: Int? = R.string.fine_permission_denied_explanation,
     ) : UiData(hideUi,icon, title, details, btn_approve, btn_cancel,
         snackbar_permission_rationale,snackbar_permission_denied_explanation)
 
     data class Background(
-        val hideUi: Boolean? = false,
-        @DrawableRes val icon: Int? = R.drawable.ic_my_location_24px,
-        @StringRes val title: Int? = R.string.background_location_access_rationale_title,
-        @StringRes val details: Int? = R.string.background_location_access_rationale_details,
-        @StringRes val btn_approve: Int? = R.string.approve_background_location_access,
-        @StringRes val btn_cancel: Int? = android.R.string.cancel,
-        @StringRes val snackbar_permission_rationale: Int? = R.string.background_location_permission_rationale,
-        @StringRes val snackbar_permission_denied_explanation: Int? = R.string.background_permission_denied_explanation,
+        var hideUi: Boolean? = false,
+        @DrawableRes var icon: Int? = R.drawable.ic_my_location_24px,
+        @StringRes var title: Int? = R.string.background_location_access_rationale_title,
+        @StringRes var details: Int? = R.string.background_location_access_rationale_details,
+        @StringRes var btn_approve: Int? = R.string.approve_background_location_access,
+        @StringRes var btn_cancel: Int? = android.R.string.cancel,
+        @StringRes var snackbar_permission_rationale: Int? = R.string.background_location_permission_rationale,
+        @StringRes var snackbar_permission_denied_explanation: Int? = R.string.background_permission_denied_explanation,
     ) : UiData(hideUi,icon, title, details, btn_approve, btn_cancel,
         snackbar_permission_rationale,snackbar_permission_denied_explanation)
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.omairtech.simple">
 
     <application
@@ -26,6 +27,12 @@
                 <action android:name="com.omairtech.gpslocation.util.ACTION_PROCESS_UPDATES" />
             </intent-filter>
         </receiver>
+
+        <!-- Add tools:replace="android:value" To replace default key in the library -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            tools:replace="android:value"
+            android:value="@string/google_api_key" />
     </application>
 
 </manifest>

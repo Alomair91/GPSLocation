@@ -24,5 +24,7 @@
     <string name="background_location_permission_rationale">The background location permission is needed for enhanced functionality.</string>
     <string name="background_permission_denied_explanation">Background location permission was denied but needed for enhanced functionality.</string>
 
-
+    <string name="google_api_key_local">PLEASE_ADD_YOUR_KEY_IN_YOUR_APP_MANIFEST</string>
+    <string name="select_your_location">Select your location!</string>
+    <string name="you">You</string>
 </resources>

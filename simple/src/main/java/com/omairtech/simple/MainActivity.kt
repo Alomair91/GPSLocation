@@ -11,7 +11,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.omairtech.gpslocation.data.LocationRepository
+import com.omairtech.gpslocation.model.AddressData
 import com.omairtech.gpslocation.model.PermissionUIData
+import com.omairtech.gpslocation.ui.SelectLocationDialog
 import com.omairtech.gpslocation.util.LocationType
 import com.omairtech.gpslocation.viewmodels.GPSLocationViewModel
 import com.omairtech.gpslocation.viewmodels.GPSLocationViewModelFactory
@@ -19,6 +21,7 @@ import com.omairtech.gpslocation.viewmodels.GPSLocationViewModelFactory
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
+    private var selectedAddress: AddressData? = null
 
     private val activityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -76,6 +79,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateStartOrStopButtonState(viewModel.isForegroundOn || viewModel.isBackgroundOn)
+        findViewById<Button>(R.id.btn_select).setOnClickListener {
+            SelectLocationDialog.newInstance(this,viewModel,selectedAddress){
+                setToText(it, "Selected Address: ${it.name} - ${it.address}")
+            }
+        }
 
         // Receiving location updates if it's starting or not
         viewModel.receivingLocationUpdates.observe(this) {
@@ -84,16 +92,16 @@ class MainActivity : AppCompatActivity() {
 
         // Receiving location data from [FusedLocationProviderClient]
         viewModel.receivingLocation.observe(this) { location ->
-            setToText("CurrentLocation:  ${location.latitude} - ${location.longitude}")
+            setToText(location,"Current Location:  ${location.latitude} - ${location.longitude}")
 
             // Retrieve address data from [Geocoder] with the retrieved location
             viewModel.retrieveAddressDataFromGeocoder {
-                setToText("Current Address: ${it.name} - ${it.address}")
+                setToText(location, "Current Address: ${it.name} - ${it.address}")
             }
 
             // Retrieve address data from [Geocoder] using custom location
             viewModel.retrieveAddressDataFromGeocoder(location.latitude, location.longitude) {
-                setToText("Current Address: ${it.name} - ${it.address}")
+                setToText(location, "Current Address: ${it.name} - ${it.address}")
             }
         }
     }
@@ -120,10 +128,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private var location: String = ""
-    private fun setToText(location: String) {
-        Log.d(TAG, location)
-        this.location += "\n\n$location"
-        findViewById<TextView>(R.id.textView).text = this.location
+    private var locationString: String = ""
+    private fun setToText(location: AddressData, locationString: String) {
+        this.selectedAddress = location
+        this.locationString += "\n\n$locationString"
+
+        Log.d(TAG, locationString)
+        findViewById<TextView>(R.id.textView).text = this.locationString
     }
 }

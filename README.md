@@ -32,7 +32,7 @@ To get a Git project into your build:
   [![](https://jitpack.io/v/Alomair91/GPSLocation.svg)](https://jitpack.io/#Alomair91/GPSLocation)
 
         dependencies {
-            implementation 'com.github.Alomair91:GPSLocation:1.04'
+            implementation 'com.github.Alomair91:GPSLocation:1.05'
         }
 
 
@@ -51,7 +51,7 @@ To get a Git project into your build:
         <dependency>
             <groupId>com.github.Alomair91</groupId>
             <artifactId>GPSLocation</artifactId>
-            <version>1.04</version>
+            <version>1.05</version>
         </dependency>
 
 
@@ -214,6 +214,30 @@ How to use it?
         }
 
 - Step 6. Finally Do the steps 3 and 4 from foreground location instructions
+
+#### Select Location from map
+
+- Step 1. Do the first step in the foreground location instructions in case you want to start  
+  GPS directly from your app.
+
+- Step 2. Do the second step in the foreground location instructions to create viewModel.
+
+- Step 3. Declare the google api meta-data in the [AndroidManifest] file in your app:
+
+          <!-- Add tools:replace="android:value" To replace default key in the library -->
+          <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              tools:replace="android:value" // 
+              android:value="@string/google_api_key" />
+
+- Step 4. Create an instance of [SelectLocationDialog] which will show a dialog to select location from map
+
+        var selectedAddress:AddressData? = null
+        SelectLocationDialog.newInstance(this,viewModel,selectedAddress){
+            selectedAddress = it
+            Log.d(TAG, "Selected Address: ${it.name} - ${it.address}")
+        }
+
 
 
 #### Please follow the simple project if you don't understand any of these instructions.
