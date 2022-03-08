@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,6 +93,11 @@ internal class PermissionFragment : BottomSheetDialogFragment() {
                 setResult(false)
             }
         }
+        // This callback will only be called when Back button pressed.
+        dialog?.setOnKeyListener { _, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) setResult(false)
+            true
+        }
     }
 
     private fun setUi(root: View, data: UiData?) {
@@ -110,15 +116,9 @@ internal class PermissionFragment : BottomSheetDialogFragment() {
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         fullScreen()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        setResult(false)
     }
 
     private fun requestFineLocationPermission() {
@@ -254,15 +254,14 @@ internal class PermissionFragment : BottomSheetDialogFragment() {
             locationType: LocationType,
             permissionUIData: PermissionUIData?,
             callback: (Boolean) -> Unit,
-        ) =
-            PermissionFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(PERMISSION_UI_DATA, permissionUIData)
-                    putSerializable(PERMISSION_REQUEST_TYPE, locationType)
-                }
-                this.callback = callback
-                //isCancelable = false
-                show((context as FragmentActivity).supportFragmentManager, null)
+        ) = PermissionFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable(PERMISSION_UI_DATA, permissionUIData)
+                putSerializable(PERMISSION_REQUEST_TYPE, locationType)
             }
+            this.callback = callback
+            isCancelable = false
+            show((context as FragmentActivity).supportFragmentManager, null)
+        }
     }
 }

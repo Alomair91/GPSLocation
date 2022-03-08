@@ -32,7 +32,7 @@ To get a Git project into your build:
   [![](https://jitpack.io/v/Alomair91/GPSLocation.svg)](https://jitpack.io/#Alomair91/GPSLocation)
 
         dependencies {
-            implementation 'com.github.Alomair91:GPSLocation:1.05'
+            implementation 'com.github.Alomair91:GPSLocation:1.06'
         }
 
 
@@ -51,7 +51,7 @@ To get a Git project into your build:
         <dependency>
             <groupId>com.github.Alomair91</groupId>
             <artifactId>GPSLocation</artifactId>
-            <version>1.05</version>
+            <version>1.06</version>
         </dependency>
 
 
@@ -101,6 +101,13 @@ How to use it?
         // Receiving location updates if it's starting or not
         viewModel.receivingLocationUpdates.observe(this) { isRunning ->
             // Update UI...
+        }
+
+        // Receiving status of whether the app permission is granted or not.
+        viewModel.isPermissionGranted.observe(this) {
+            // keep asking if imp or do whatever
+            Log.e("Permission","isPermissionGranted: $it")
+            viewModel.startLocationUpdates() // keep asking
         }
 
         // Receiving location data from [FusedLocationProviderClient]

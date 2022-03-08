@@ -40,6 +40,11 @@ class LocationRepository private constructor(private val locationManager: Locati
     val receivingLocationUpdates: LiveData<Boolean> = locationManager.receivingLocationUpdates
 
     /**
+     * Status of whether the app permission is granted or not.
+     */
+    val isPermissionGranted: LiveData<Boolean> = locationManager.isPermissionGranted
+
+    /**
      * Status of whether the app is actively subscribed to location changes.
      */
     val locationUpdates: LiveData<AddressData> = locationManager.receivingLocation

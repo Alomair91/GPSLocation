@@ -24,6 +24,11 @@ class GPSLocationViewModel(
     val receivingLocationUpdates: LiveData<Boolean> = locationRepository.receivingLocationUpdates
 
     /**
+     * Status of whether the app permission is granted or not.
+     */
+    val isPermissionGranted: LiveData<Boolean> = locationRepository.isPermissionGranted
+
+    /**
      *  Returns current location from LocationCallback.
      */
     val receivingLocation: LiveData<AddressData> = locationRepository.locationUpdates

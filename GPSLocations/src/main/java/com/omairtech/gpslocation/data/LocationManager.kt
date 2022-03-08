@@ -49,6 +49,13 @@ internal class LocationManager(
     val receivingLocationUpdates: LiveData<Boolean> get() = _receivingLocationUpdates
 
     /**
+     * Status of permission updates, i.e., whether the app permission is granted or not..
+     */
+    private val _isPermissionGranted: MutableLiveData<Boolean> =
+        MutableLiveData<Boolean>(false)
+    val isPermissionGranted: LiveData<Boolean> get() = _isPermissionGranted
+
+    /**
      * Location updates, i.e., whether the app is actively subscribed to location changes.
      */
     private val _receivingLocation: MutableLiveData<AddressData> = MutableLiveData<AddressData>()
@@ -138,7 +145,9 @@ internal class LocationManager(
     // Ask user to get the required permissions
     private fun checkPermission() {
         PermissionFragment.newInstance(context, locationType, permissionUIData) { isGranted ->
-            if(isGranted) startLocationUpdates()
+            _isPermissionGranted.value = isGranted
+            if(_isPermissionGranted.value == true)
+                startLocationUpdates()
         }
     }
 

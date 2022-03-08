@@ -90,6 +90,13 @@ class MainActivity : AppCompatActivity() {
             updateStartOrStopButtonState(it)
         }
 
+        // Receiving status of whether the app permission is granted or not.
+        viewModel.isPermissionGranted.observe(this) {
+            // keep asking if imp or do whatever
+            Log.e("Permission","isPermissionGranted: $it")
+            // viewModel.startLocationUpdates() // keep asking
+        }
+
         // Receiving location data from [FusedLocationProviderClient]
         viewModel.receivingLocation.observe(this) { location ->
             setToText(location,"Current Location:  ${location.latitude} - ${location.longitude}")
