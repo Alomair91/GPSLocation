@@ -12,6 +12,7 @@ const val NOTIFICATION_ID = 651234
 // The key of location
 const val TAG = "GPSLocations"
 const val ACTION_PROCESS_UPDATES = "com.omairtech.gpslocation.action.PROCESS_UPDATES"
+const val ACTION_STARTED_FROM_NOTIFICATION = "com.omairtech.gpslocation.STARTED_FROM_NOTIFICATION"
 const val CURRENT_LOCATION = -1
 
 // Other keys

@@ -2,9 +2,11 @@ package com.omairtech.gpslocation.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
 
 internal class SessionPreference private constructor(context: Context) {
-    private val ref: SharedPreferences = context.getSharedPreferences("SettingsRef", Context.MODE_PRIVATE)
+    private val ref: SharedPreferences =
+        context.getSharedPreferences("SettingsRef", Context.MODE_PRIVATE)
 
     companion object {
         @Volatile
@@ -16,9 +18,9 @@ internal class SessionPreference private constructor(context: Context) {
             }
         }
 
-        // Save Language
         const val IS_FOREGROUND_ON = "isForegroundOn"
         const val IS_BACKGROUND_ON = "isBackgroundOn"
+        const val KEY_REQUESTING_LOCATION_UPDATES = "LocationUpdateEnable"
     }
 
     internal fun saveForeground(isForegroundOn: Boolean) {
@@ -26,6 +28,7 @@ internal class SessionPreference private constructor(context: Context) {
         editor.putBoolean(IS_FOREGROUND_ON, isForegroundOn)
         editor.apply()
     }
+
     val isForegroundOn: Boolean
         get() = ref.getBoolean(IS_FOREGROUND_ON, false)
 
@@ -34,6 +37,18 @@ internal class SessionPreference private constructor(context: Context) {
         editor.putBoolean(IS_BACKGROUND_ON, isBackgroundOn)
         editor.apply()
     }
+
     val isBackgroundOn: Boolean
         get() = ref.getBoolean(IS_BACKGROUND_ON, false)
+
+
+    fun setRequestingLocationUpdate(value: Boolean) {
+        val editor: SharedPreferences.Editor = ref.edit()
+        editor.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, value).apply()
+        editor.apply()
+    }
+
+    val requestingLocationUpdates: Boolean
+        get() = ref.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false)
+
 }

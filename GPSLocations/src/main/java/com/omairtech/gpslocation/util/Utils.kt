@@ -114,6 +114,7 @@ fun BottomSheetDialogFragment.fullScreen() {
 /**
  * Create a Notification that is shown as a heads-up notification if possible.
  *
+ * @param title Title shown on the notification
  * @param message Message shown on the notification
  * @param context Context needed to create Toast
  */

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Geocoder
+import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -90,7 +91,7 @@ internal class LocationManager(
 
         // Sets the maximum time when batched location updates are delivered. Updates may be
         // delivered sooner than this interval.
-        maxWaitTime = TimeUnit.MINUTES.toMillis(2)
+        maxWaitTime = TimeUnit.MINUTES.toMillis(0)
 
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
@@ -99,7 +100,7 @@ internal class LocationManager(
     private var locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             //The last location in the list is the newest
-            if (locationResult.locations.size > 0) locationResult.locations.last().let {
+            locationResult.lastLocation.let {
                 Log.d(TAG, "CurrentLocation:  ${it.latitude} - ${it.longitude}")
                 _receivingLocation.value = toLocation(it, true)
             }
@@ -217,6 +218,13 @@ internal class LocationManager(
             _receivingLocationUpdates.value = true
 
             if (locationType == LocationType.FINE_LOCATION) {
+                // Got last known location. In some rare situations this can be null.
+                fusedLocationClient.lastLocation.addOnSuccessListener(fun(it: Location?) {
+                    it?.let {
+                        Log.d(TAG, "LastLocation:  ${it.latitude} - ${it.longitude}")
+                        _receivingLocation.value = toLocation(it, true)
+                    }
+                })
                 fusedLocationClient.requestLocationUpdates(locationRequest,
                     locationCallback, Looper.myLooper()!!)
 

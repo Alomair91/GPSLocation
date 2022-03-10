@@ -33,6 +33,21 @@
             android:name="com.google.android.geo.API_KEY"
             tools:replace="android:value"
             android:value="@string/google_api_key" />
+
+
+
+
+
+        <activity
+            android:name=".ForegroundActivity"
+            android:exported="true"/>
+
+        <service
+            android:name=".AppForegroundService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="location" />
+
     </application>
 
 </manifest>

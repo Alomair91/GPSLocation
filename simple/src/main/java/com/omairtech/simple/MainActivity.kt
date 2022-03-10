@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val locationType = LocationType.FINE_LOCATION
-    private val intervalInSecond: Long = 60
-    private val fastIntervalInSecond: Long = 30
+    private val intervalInSecond: Long = 6
+    private val fastIntervalInSecond: Long = 3
 
     // You can customize the resources of [permission dialog] if you wish
     private val foregroundUiData = PermissionUIData.Foreground(
@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         // Stops location updates if background permissions aren't approved.
         if (viewModel.receivingLocationUpdates.value == true && !viewModel.hasBackgroundPermissions) {
+            Log.e("test","te")
             viewModel.stopLocationUpdates()
         }
     }

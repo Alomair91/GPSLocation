@@ -51,7 +51,7 @@ private const val TAG = "PermissionRequestFrag"
  *
  * Allows users to grant the permissions as well.
  */
-internal class PermissionFragment : BottomSheetDialogFragment() {
+class PermissionFragment : BottomSheetDialogFragment() {
 
     // Type of permission to request (fine or background). Set by calling Activity.
     private var locationType: LocationType? = null

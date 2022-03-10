@@ -16,7 +16,7 @@ abstract class UiData(
     @StringRes var cancel_res: Int?,
     @StringRes var snackbar_permission_rationale_res: Int?,
     @StringRes var snackbar_permission_denied_explanation_res: Int?,
-)
+): Serializable
 
 @Keep
 data class PermissionUIData(
