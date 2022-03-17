@@ -3,6 +3,7 @@ package com.omairtech.gpslocation.data
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.content.res.Configuration
 import android.location.Location
 import android.os.*
@@ -143,7 +144,10 @@ open class ForegroundService : Service() {
     override fun onUnbind(intent: Intent): Boolean {
         if (!mChangingConfiguration && SessionPreference.getInstance(this).requestingLocationUpdates) {
             Log.e(TAG, "onUnbind(): Start Foreground Service")
-            startForeground(NOTIFICATION_ID, getNotification(this))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                startForeground(NOTIFICATION_ID, getNotification(this),FOREGROUND_SERVICE_TYPE_LOCATION)
+            else
+                startForeground(NOTIFICATION_ID, getNotification(this))
         }
         return true
     }

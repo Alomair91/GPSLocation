@@ -16,6 +16,7 @@
 package com.omairtech.gpslocation.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -65,8 +66,8 @@ class PermissionFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
-        locationType = arguments?.getSerializable(PERMISSION_REQUEST_TYPE) as LocationType
-        permissionUIData = arguments?.getSerializable(PERMISSION_UI_DATA) as PermissionUIData
+        locationType = arguments?.getSerializable(PERMISSION_REQUEST_TYPE) as LocationType?
+        permissionUIData = arguments?.getSerializable(PERMISSION_UI_DATA) as PermissionUIData?
     }
 
     private lateinit var root: View
@@ -255,6 +256,9 @@ class PermissionFragment : BottomSheetDialogFragment() {
             permissionUIData: PermissionUIData?,
             callback: (Boolean) -> Unit,
         ) = PermissionFragment().apply {
+
+            if (context is Activity && context.isDestroyed) return@apply
+
             arguments = Bundle().apply {
                 putSerializable(PERMISSION_UI_DATA, permissionUIData)
                 putSerializable(PERMISSION_REQUEST_TYPE, locationType)

@@ -1,5 +1,6 @@
 package com.omairtech.gpslocation.ui
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -231,6 +232,9 @@ class SelectLocationDialog : BottomSheetDialogFragment(), OnMapReadyCallback {
             addressData: AddressData? = null,
             callback: (AddressData) -> Unit,
         ) = SelectLocationDialog().apply {
+
+            if(context is Activity && context.isDestroyed) return@apply
+
             this.viewModel = viewModel
             this.selectedAddress = addressData
             this.callback = callback
